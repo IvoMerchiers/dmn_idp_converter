@@ -1,21 +1,21 @@
 vocabulary V{
-//Input entries with labels
-type SocialeWoning constructed from{true,false}
-type BescheidenWoning constructed from{true,false}
-//Output entries
-type TypeWoning constructed from{Sociale_Woning,Bescheiden_Woning,Andere_Woning}
+	//Input entries with labels
+	type BescheidenWoning constructed from{true,false}
+	type SocialeWoning constructed from{true,false}
+	//Output entries
+	type TypeWoning constructed from{Sociale_Woning,Bescheiden_Woning,Andere_Woning}
 }
 
 
 Theory T:V {
-//DMN table rules below:
-SocialeWoning=true & BescheidenWoning=true => TypeWoning=Sociale_Woning
-SocialeWoning=true & BescheidenWoning=false => TypeWoning=Bescheiden_Woning
-SocialeWoning=false & BescheidenWoning=true => TypeWoning=Sociale_Woning
-SocialeWoning=false & BescheidenWoning=false => TypeWoning=Andere_Woning
+	//DMN table rules below:
+	BescheidenWoning = true & SocialeWoning = true => TypeWoning = Sociale_Woning
+	BescheidenWoning = true & SocialeWoning = false => TypeWoning = Bescheiden_Woning
+	BescheidenWoning = false & SocialeWoning = true => TypeWoning = Sociale_Woning
+	BescheidenWoning = false & SocialeWoning = false => TypeWoning = Andere_Woning
 }
 
 
 structure S:V{
- // INSERT INPUT HERE
+	// INSERT INPUT HERE
 }

@@ -52,7 +52,7 @@ Translates one rule into a string
     for i in range(len(input_rule_entries)):
         rule_entry = input_rule_entries[i]
         if rule_entry is not None:
-            rule_string.append(input_labels[i] + "=" + rule_entry)
+            rule_string.append(input_labels[i] + " = " + rule_entry)
             rule_string.append(" & ")
     del rule_string[-1]  # remove last &
     rule_string.append(" => ")
@@ -60,7 +60,7 @@ Translates one rule into a string
         # Read specific rule
         rule_entry = output_rule_entries[i]
         if rule_entry is not None:
-            rule_string.append(output_labels[i] + "=" + rule_entry)
+            rule_string.append(output_labels[i] + " = " + rule_entry)
             rule_string.append(" & ")
     del rule_string[-1]
     return ''.join(rule_string)

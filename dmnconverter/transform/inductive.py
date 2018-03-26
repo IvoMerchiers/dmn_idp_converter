@@ -48,13 +48,13 @@ def __translate_inductive(input_labels, input_rule_entries, output_labels, outpu
         # Read specific rule
         rule_entry = output_rule_entries[i]
         if rule_entry is not None:
-            rule_string.append(output_labels[i] + "=" + rule_entry)
+            rule_string.append(output_labels[i] + " = " + rule_entry)
     rule_string.append(" <- ")
     # Cover input
     for i in range(len(input_rule_entries)):
         rule_entry = input_rule_entries[i]
         if rule_entry is not None:
-            rule_string.append(input_labels[i] + "=" + rule_entry)
+            rule_string.append(input_labels[i] + " = " + rule_entry)
             rule_string.append(" & ")
     del rule_string[-1]  # Remove last &
     return ''.join(rule_string)
