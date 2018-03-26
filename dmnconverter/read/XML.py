@@ -1,4 +1,5 @@
 from dmnconverter.tools.textclean import clean_text
+import re
 
 
 def read_expressions(ont: str, dec_table, category: str) -> dict:
@@ -7,7 +8,7 @@ def read_expressions(ont: str, dec_table, category: str) -> dict:
     for expression in dec_table.findall(ont + category):
         label = expression.attrib['label']
         label = label.replace(' ', '_')
-        values = __read_values(ont, category, expression)
+        values = __read_values(ont, category, expression)  # type: tuple (typeRef, values)
 
         labels_dict[label] = values
     return labels_dict
@@ -40,11 +41,27 @@ def read_rules(ont: str, dec_table) -> "Tuple of lists":
     # Find list of rules
     dmn_rules = dec_table.findall(ont + 'rule')
     # Read input and output entries of all the rules. While doing string cleanup
-    input_rule_comp = [[clean_text(entry) for entry in rule.findall(ont + 'inputEntry')] for rule in
+    input_rule_comp = [[__structure_comparison(entry) for entry in rule.findall(ont + 'inputEntry')] for rule in
                        dmn_rules]
-    output_rule_comp = [[clean_text(entry) for entry in rule.findall(ont + 'outputEntry')] for rule in
+    output_rule_comp = [[__structure_comparison(entry) for entry in rule.findall(ont + 'outputEntry')] for rule in
                         dmn_rules]
     return input_rule_comp, output_rule_comp
 
 
+def __structure_comparison(entry: "XML inputEntry") -> (str, str):
+    # clean
+    cleaned = clean_text(entry)
+    if cleaned is None:
+        return cleaned
+    content_pattern = re.compile('[\\w]+')
+    content_match = re.search(content_pattern, cleaned)
+    content = content_match.group(0)
 
+    comparator = cleaned.replace(content, '')
+    if not comparator:
+        comparator = '='
+    elif comparator == '<=':
+        comparator = '=<'
+
+    content = content.strip('_')  # removes excess underscores
+    return comparator, content

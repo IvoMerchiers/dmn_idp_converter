@@ -46,15 +46,18 @@ def __translate_inductive(input_labels, input_rule_entries, output_labels, outpu
         if i > 0:
             raise ValueError('Inductive definition model can currently only have one output entry.')
         # Read specific rule
-        rule_entry = output_rule_entries[i]
+        rule_comparator = output_rule_entries[i][0]
+        rule_entry = output_rule_entries[i][1]
         if rule_entry is not None:
-            rule_string.append(output_labels[i] + " = " + rule_entry)
+            rule_string.append(output_labels[i] + " " + rule_comparator + ' ' + rule_entry)
     rule_string.append(" <- ")
+
     # Cover input
     for i in range(len(input_rule_entries)):
-        rule_entry = input_rule_entries[i]
+        rule_comparator = input_rule_entries[i][0]
+        rule_entry = input_rule_entries[i][1]
         if rule_entry is not None:
-            rule_string.append(input_labels[i] + " = " + rule_entry)
+            rule_string.append(input_labels[i] + " " + rule_comparator + ' ' + rule_entry)
             rule_string.append(" & ")
     del rule_string[-1]  # Remove last &
     return ''.join(rule_string)

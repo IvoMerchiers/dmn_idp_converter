@@ -1,6 +1,6 @@
 
-def clean_text(entry):
-    """Read one line of entries (1 rule) and returns these in a list"""
+def clean_text(entry) -> str:
+    """removes accents and adds underscores to text"""
     text = entry[0].text
     if text is not None:
         text = text.replace('"', '')

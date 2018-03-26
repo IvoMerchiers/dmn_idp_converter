@@ -1,18 +1,19 @@
 vocabulary V{
 	//Input entries with labels
-	type BescheidenWoning constructed from{true,false}
-	type SocialeWoning constructed from{true,false}
+	type Kinderen isa int
 	//Output entries
-	type TypeWoning constructed from{Sociale_Woning,Bescheiden_Woning,Andere_Woning}
+	type MaxKl isa int
 }
 
 
 Theory T:V {
 	//DMN table rules below:
-	BescheidenWoning = true & SocialeWoning = true => TypeWoning = Sociale_Woning
-	BescheidenWoning = true & SocialeWoning = false => TypeWoning = Bescheiden_Woning
-	BescheidenWoning = false & SocialeWoning = true => TypeWoning = Sociale_Woning
-	BescheidenWoning = false & SocialeWoning = false => TypeWoning = Andere_Woning
+	MaxKl = 745 <- Kinderen =< 2
+	MaxKl = 845 <- Kinderen = 3
+	MaxKl = 845 <- Kinderen = 4
+	MaxKl = 945 <- Kinderen = 5
+	MaxKl = 1045 <- Kinderen >= 7
+	MaxKl = 945 <- Kinderen = 6
 }
 
 
