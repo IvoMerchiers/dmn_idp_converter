@@ -17,3 +17,15 @@ def __single_expression2voc(label: str, value_tuple: tuple) -> str:
     else:
         raise TypeError("type " + type_ref + ' unknown')
     return voc_line
+
+def transform_single_entry(label: str, rule_entry: tuple) -> list:
+    rule_comparator = rule_entry[0]
+    rule_entry_value = rule_entry[1]
+
+    if rule_entry_value is None:
+        return None
+    elif rule_comparator.startswith(('[', ']')):
+        raise ValueError('Range not yet supported')
+    else:
+        entry_string = label + ' ' + rule_comparator + ' ' + rule_entry_value
+
