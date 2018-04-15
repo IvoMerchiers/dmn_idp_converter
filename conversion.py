@@ -13,4 +13,4 @@ file_location=directory+file_name+'.dmn'
 output_name=file_name+'.idp'
 conv = Dmn()
 conv.read(file_location)
-conv.print_inductive(output_name)
+conv.verify_unique(output_name)

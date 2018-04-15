@@ -1,4 +1,4 @@
-from dmnconverter.tools.textclean import clean_text
+from dmnconverter.tools.texttools import clean_text
 import re
 
 

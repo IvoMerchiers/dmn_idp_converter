@@ -9,7 +9,7 @@ import dmnconverter.read.XML
 import dmnconverter.transform.inductive
 import dmnconverter.transform.implicative
 import dmnconverter.transform.meta
-
+import dmnconverter.verify.unique_policy
 
 class DMNConverter:
     # define used ontology
@@ -48,4 +48,7 @@ class DMNConverter:
 
     def print_meta(self, file_name):
         dmnconverter.transform.meta.print_file(file_name, self.inputRuleComp, self.inputLabelDict, self.outputRuleComp, self.outputLabelDict)
+
+    def verify_unique(self, file_name):
+        dmnconverter.verify.unique_policy.print_file(file_name, self.inputRuleComp, self.inputLabelDict)
 
