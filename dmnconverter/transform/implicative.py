@@ -25,7 +25,7 @@ def print_file(file_name, input_rule_comp: list, input_label_dict: dict,
     # Translate theory
     theory = __rules2theory(input_rule_comp, input_labels, output_rule_comp, output_labels)
     # print results
-    printer.print_idp(file_name, vocabulary, theory)
+    printer.print_idp(file_name, vocabulary, theory, [])
 
 
 def __rules2theory(input_rule_comp: list, input_labels: list, output_rule_comp: list, output_labels: list):
@@ -50,9 +50,9 @@ Translates one rule into a string
     rule_string = []
     # Cover input
     for i in range(len(input_rule_entries)):
-        rule_comparator=input_rule_entries[i][0]
-        rule_entry = input_rule_entries[i][1]
-        if rule_entry is not None:
+        if input_rule_entries[i] is not None:
+            rule_comparator=input_rule_entries[i][0]
+            rule_entry = input_rule_entries[i][1]
             rule_string.append(input_labels[i] +' '+ rule_comparator +' '+ rule_entry)
             rule_string.append(" & ")
     del rule_string[-1]  # remove last &
@@ -61,9 +61,9 @@ Translates one rule into a string
     # cover output
     for i in range(len(output_rule_entries)):
         # Read specific rule
-        rule_comparator = output_rule_entries[i][0]
-        rule_entry = output_rule_entries[i][1]
-        if rule_entry is not None:
+        if output_rule_entries[i] is not None:
+            rule_comparator = output_rule_entries[i][0]
+            rule_entry = output_rule_entries[i][1]
             rule_string.append(output_labels[i] + " "+ rule_comparator + ' ' + rule_entry)
             rule_string.append(" & ")
     del rule_string[-1]

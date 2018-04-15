@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ElemTree
 import dmnconverter.read.XML
 import dmnconverter.transform.inductive
 import dmnconverter.transform.implicative
+import dmnconverter.transform.meta
 
 
 class DMNConverter:
@@ -44,3 +45,7 @@ class DMNConverter:
 
     def print_implicative(self, file_name):
         dmnconverter.transform.implicative.print_file(file_name, self.inputRuleComp, self.inputLabelDict, self.outputRuleComp, self.outputLabelDict)
+
+    def print_meta(self, file_name):
+        dmnconverter.transform.meta.print_file(file_name, self.inputRuleComp, self.inputLabelDict, self.outputRuleComp, self.outputLabelDict)
+

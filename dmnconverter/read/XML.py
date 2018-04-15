@@ -3,7 +3,12 @@ import re
 
 
 def read_expressions(ont: str, dec_table, category: str) -> dict:
-    """Category can be 'input' or 'output'"""
+    """ Read the expressions from the DMN table
+    :param ont: used ontology
+    :param dec_table: relevant decision table
+    :param category: either 'input' or 'output'
+    :return: dictionary with key every expression and a tuple of (typeRef, values), with values a string
+    """
     labels_dict = dict()
     for expression in dec_table.findall(ont + category):
         label = expression.attrib['label']
@@ -37,7 +42,15 @@ def __read_values(ont: str, category: str, expression) -> tuple:
 
 
 def read_rules(ont: str, dec_table) -> "Tuple of lists":
-    """Rules stored as tuple of 2 2D Matrix of entries. First matrix is input, second is output """
+    """Rules stored as tuple of 2 2D Matrix of entries. First matrix is input, second is output
+    :param ont: Ontology
+    used in the decision table
+    :param dec_table: relevant decision table
+    :return: tuple of input and output rule
+    components. These are two lists, representing every rule entry, where the first index iterates over the rules and
+    second index over the value assigned to that variable. The assigned value is in the form of a (comparator,
+    value) tuple  or None if no comparison is made.
+    """
     # Find list of rules
     dmn_rules = dec_table.findall(ont + 'rule')
     # Read input and output entries of all the rules. While doing string cleanup
@@ -45,15 +58,21 @@ def read_rules(ont: str, dec_table) -> "Tuple of lists":
                        dmn_rules]
     output_rule_comp = [[__structure_comparison(entry) for entry in rule.findall(ont + 'outputEntry')] for rule in
                         dmn_rules]
+
     return input_rule_comp, output_rule_comp
 
 
 def __structure_comparison(entry: "XML inputEntry") -> (str, str):
-    # clean
+    """
+    Reads one rule-entry and structures it as a tuple consisting of (comparator, value), both encoded as strings.
+    Returns None if no entry is present
+    :param entry: The XML inputEntry as defined in the ontology
+    :return:
+    """
     cleaned = clean_text(entry)
     if cleaned is None:
         return cleaned
-    content_pattern = re.compile('[\\w]+')
+    content_pattern = re.compile('[\\w.]+')
     content_match = re.search(content_pattern, cleaned)
     content = content_match.group(0)
 
