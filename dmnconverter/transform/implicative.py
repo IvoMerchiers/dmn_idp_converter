@@ -14,9 +14,9 @@ def print_file(file_name, input_rule_comp: list, input_label_dict: dict,
     :param output_label_dict: dictionary of output labels and their domains
     """
     # vocabulary uses the more general direct translation
-    vocabulary = ["//Input entries with labels"]
+    vocabulary = ["//Input variables"]
     vocabulary.extend(dmnconverter.transform.general.direct_voc(input_label_dict))
-    vocabulary.append('//Output entries')
+    vocabulary.append('//Output variables')
     vocabulary.extend(dmnconverter.transform.general.direct_voc(output_label_dict))
 
     # Find output labels
@@ -34,11 +34,12 @@ def __rules2theory(input_rule_comp: list, input_labels: list, output_rule_comp: 
     for i in range(len(input_rule_comp)):  # loop over all rules
         theory_lines.append(
             __translate_implicative(input_labels, input_rule_comp[i], output_labels,
-                                  output_rule_comp[i]))
+                                    output_rule_comp[i]))
     return theory_lines
 
 
-def __translate_implicative(input_labels: [str], input_rule_entries: list, output_labels: [str], output_rule_entries: list) -> str:
+def __translate_implicative(input_labels: [str], input_rule_entries: [tuple], output_labels: [str],
+                            output_rule_entries: list) -> str:
     """
 Translates one rule into a string
     :param input_labels:
@@ -51,9 +52,10 @@ Translates one rule into a string
     # Cover input
     for i in range(len(input_rule_entries)):
         if input_rule_entries[i] is not None:
-            rule_comparator=input_rule_entries[i][0]
-            rule_entry = input_rule_entries[i][1]
-            rule_string.append(input_labels[i] +' '+ rule_comparator +' '+ rule_entry)
+            rule_string.append(__translate_entry(input_labels[i], input_rule_entries[i]))
+            # rule_comparator = input_rule_entries[i][0]
+            # rule_entry = input_rule_entries[i][1]
+            # rule_string.append(input_labels[i] + ' ' + rule_comparator + ' ' + rule_entry)
             rule_string.append(" & ")
     del rule_string[-1]  # remove last &
     rule_string.append(" => ")
@@ -64,7 +66,24 @@ Translates one rule into a string
         if output_rule_entries[i] is not None:
             rule_comparator = output_rule_entries[i][0]
             rule_entry = output_rule_entries[i][1]
-            rule_string.append(output_labels[i] + " "+ rule_comparator + ' ' + rule_entry)
+            rule_string.append(output_labels[i] + " " + rule_comparator + ' ' + rule_entry)
             rule_string.append(" & ")
+    # delete last & and put a dot on the end
     del rule_string[-1]
+    rule_string.append(".")
+
     return ''.join(rule_string)
+
+
+def __translate_entry(label: str, rule_entry: tuple) -> str:
+    entry_strings = []
+    rule_comparator = rule_entry[0]
+    rule_entry = rule_entry[1]
+    rule_cases = rule_entry.split(", ")
+    for case in rule_cases:
+        entry_strings.append(label + " " + rule_comparator + " " + case)
+        entry_strings.append(" | ")
+    # delete last or case
+    del entry_strings[-1]
+    return ''.join(entry_strings)
+

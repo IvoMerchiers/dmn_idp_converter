@@ -1,6 +1,7 @@
 import dmnconverter.tools.print as printer
 import dmnconverter.tools.texttools as text_tools
 import dmnconverter.transform.general
+# TODO: get functions these out of general and put these into meta representation (or build proper class hiararchy).
 from dmnconverter.transform.general import list_meta_variables, specify_meta_domain, build_meta_input_rule
 
 
@@ -21,72 +22,12 @@ def print_file(file_name, input_rule_comp: list, input_label_dict: dict,
     modelint_stop = 20
 
     # Vocabulary is fixed
-    vocabulary = ["type RuleNr isa int",
-                  "type Variable",
-                  "type InputVariable isa Variable",
-                  "type OutputVariable isa Variable",
-                  '',
-                  "type ModelInt isa int // Sets range of all integers in the problem",
-                  "type Value contains ModelInt",
-                  '',
-
-                  "// Assigns a value to a variable",
-                  "VarValue(Variable):Value",
-                  "OutputVarValue(OutputVariable):Value",
-                  '',
-
-                  "// Indicate if the current assignments 'trigger' a rule",
-                  "Triggered(RuleNr)",
-                  '',
-
-                  "// Domains and ranges of variables",
-                  "Domain(Variable,Value)",
-                  "Range(Variable,Value,Value) // inclusive range with min and max as values",
-                  '',
-
-                  "// Allow alternative comparison operators",
-                  "type Operator constructed from {eq,less, leq, grt, geq}",
-                  "Compare(Variable, Operator, Value)",
-                  '',
-
-                  "// RuleComp forms a component of a rule",
-                  "RuleIn(RuleNr, InputVariable, Operator, Value)",
-                  "RuleOut(RuleNr, OutputVariable, Value) // output can only be equal]"]
+    vocabulary = meta_vocabulary()
 
     # Theory is fixed
-    theory = ['// CORRECT OUTPUT OF RULES',
-              '',
-              "// Define meaning of outputVariable",
-              "{ !var[OutputVariable], val[Value]: OutputVarValue(var)=val <- VarValue(var)=val. }",
-              '',
-              "// Define when a rule is triggered",
-              "{ !rN[RuleNr]: Triggered(rN)<- !var[InputVariable], val[Value], op[Operator]: RuleIn(rN,var, op, "
-              "val) => Compare(var,op,val) . }",
-              '',
-              "// Assign output to a triggered rule",
-              "{ !yvar[OutputVariable], yval[Value]: OutputVarValue(yvar)=yval<- ?n[RuleNr]:RuleOut(n, yvar, "
-              "yval) & Triggered(n). }",
-              '',
-              "// RESTRICT DOMAINS & RANGES",
-              '',
-              "// Experimenting with setting a range",
-              "// for all good values within the range, link these to the domain",
-              "!var[Variable], minVal[Value], maxVal[Value]: Range(var, minVal, maxVal) => (minVal =< VarValue(var) "
-              "=< maxVal).",
-              '',
-              "// All variable assignments match their domain",
-              "!var[Variable], val1[Value]: ?val2[Value]: Domain(var,val1)=> (Domain(var,val2) & VarValue(var)=val2).",
-              '',
-              "// DEFINE COMPARISON OPERATORS",
-              "{  ",
-              "!a[Variable], val[Value]: Compare(a, eq, val) <-  VarValue(a)=val.",
-              "!a[Variable], val[Value]: Compare(a, less, val) <-  VarValue(a)<val.",
-              "!a[Variable], val[Value]: Compare(a, leq, val) <-  VarValue(a)=<val.",
-              "!a[Variable], val[Value]: Compare(a, grt, val) <-  VarValue(a)>val.",
-              "!a[Variable], val[Value]: Compare(a, geq, val) <-  VarValue(a)>=val.",
-              "}"]
+    theory = meta_theory()
 
-    # Find output labels
+    # Find labels
     input_labels = list(input_label_dict.keys())
     output_labels = list(output_label_dict.keys())
 
@@ -104,7 +45,7 @@ def print_file(file_name, input_rule_comp: list, input_label_dict: dict,
     # merge both input and output
     domain = input_domain + output_domain
     ranges = input_range + output_range
-    # add to structure
+    # add enumerated domains and ranges to structure
     structure.append('Domain = {' + '; '.join(text_tools.make_str(domain)) + '}')
     structure.append('Range = {' + '; '.join(text_tools.make_str(ranges)) + '}')
 
@@ -113,8 +54,6 @@ def print_file(file_name, input_rule_comp: list, input_label_dict: dict,
     structure.append('RuleOut = {' + '; '.join(__build_output_rule(output_labels, output_rule_comp)) + '}')
 
     printer.print_idp(file_name, vocabulary, theory, structure)
-
-
 
 
 def __build_output_rule(labels: list, rule_components: list) -> list:
@@ -136,3 +75,79 @@ def __build_output_rule(labels: list, rule_components: list) -> list:
                     value = text_tools.enquote(value)
                 rule.append(str(rule_nr + 1) + ',' + label + ',' + value)
     return rule
+
+
+def meta_vocabulary() -> [str]:
+    vocabulary = [
+                  "type RuleNr isa int",
+                  "type CaseNr isa int",
+                  "type Variable",
+                  "type InputVariable isa Variable",
+                  "type OutputVariable isa Variable",
+                  "",
+                  "type ModelInt isa int // Sets range of all integers in the problem",
+                  "type Value contains ModelInt",
+                  "",
+                  "// Assigns a value to a variable",
+                  "VarValue(Variable):Value",
+                  "OutputVarValue(OutputVariable):Value",
+                  "",
+                  "// Indicate if the current assignments 'trigger' a rule",
+                  "Triggered(RuleNr)",
+                  "",
+                  "// Matched and trivial rule entries",
+                  "Match(RuleNr,Variable)",
+                  "",               "// Domains and ranges of variables",
+                  "Domain(Variable,Value)",
+                  "Range(Variable,Value,Value) // inclusive range with min and max as values",
+                  "",
+                  "// Allow alternative comparison operators",
+                  "type Operator constructed from {eq,less, leq, grt, geq}",
+                  "Compare(Variable, Operator, Value)",
+                  "",
+                  "// RuleComp forms a component of a rule",
+                  "RuleIn(RuleNr, CaseNr, InputVariable, Operator, Value)",
+                  "RuleOut(RuleNr, OutputVariable, Value) // output can only be equal",
+                  ""
+                  ]
+    return vocabulary
+
+
+def meta_theory() -> [str]:
+    theory = [
+              "// CORRECT OUTPUT OF RULES",
+              "// Define meaning of outputVariable",
+              "{ !var[OutputVariable], val[Value]: OutputVarValue(var)=val <- VarValue(var)=val. }",
+              "",
+              "	// Match predicate",
+              "{",
+              "!rN[RuleNr],var[InputVariable]: Match(rN,var)<- ?cN[CaseNr]: ?val1[Value], op1[Operator]: RuleIn(rN,"
+              "cN,var,op1, val1) & ( !val2[Value], op2[Operator]: RuleIn(rN,cN,var, op2, val2) => Compare(var,op2,"
+              "val2) ).",
+              "   !rN[RuleNr],var[InputVariable]: Match(rN,var) <- ?0 val[Value],cN[CaseNr], op[Operator]: RuleIn(rN, cN,var, op, val).",
+              "}",
+              "",
+              "// Define when a rule is triggered",
+              "{ !rN[RuleNr]: Triggered(rN)<- !var[InputVariable]:  Match(rN,var). }",
+              "",
+              "// Assign output to a triggered rule",
+              "{ !yvar[OutputVariable], yval[Value]: OutputVarValue(yvar)=yval<- ?n[RuleNr]:RuleOut(n, yvar, yval) & Triggered(n). }",
+              "",
+              "// RESTRICT DOMAINS & RANGES",
+              "// for all good values within the range, link these to the domain",
+              "!var[Variable], minVal[Value], maxVal[Value]: Range(var, minVal, maxVal) => (minVal =< VarValue(var) "
+              "=< maxVal).",
+              "",
+              "// If a domain is defined, all variable assignments match it.x",
+              "!var[Variable], val1[Value]: ?val2[Value]: Domain(var,val1)=> (Domain(var,val2) & VarValue(var)=val2).",
+              "",
+              "// DEFINE COMPARISON OPERATORS",
+              "{  ",
+              "    !a[Variable], val[Value]: Compare(a, eq, val) <-  VarValue(a)=val.",
+              "    !a[Variable], val[Value]: Compare(a, less, val) <-  VarValue(a)<val.",
+              "    !a[Variable], val[Value]: Compare(a, leq, val) <-  VarValue(a)=<val.",
+              "    !a[Variable], val[Value]: Compare(a, grt, val) <-  VarValue(a)>val.",
+              "    !a[Variable], val[Value]: Compare(a, geq, val) <-  VarValue(a)>=val.",
+              "}"
+              ]
+    return theory

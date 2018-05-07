@@ -6,7 +6,7 @@ def print_idp(file_name: str, vocabulary_strings: list, theory_strings: list, st
     :param structure_strings: list of strings, with every string denoting one line in the structure
     """
     # Header
-    # TODO: make header for transformed files
+    # TODO make header for transformed files?
     # start with vocab
     lines = ['vocabulary V{']
     lines.extend(__indent(vocabulary_strings))

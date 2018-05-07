@@ -7,26 +7,35 @@ def direct_voc(labels_dict: dict) -> list:
     :param labels_dict: dictionary of labels
     :return: list of strings, every entry is a line in the vocabulary
     """
-    voc_lines = [__single_expression2voc(key, labels_dict[key]) for key in labels_dict.keys()]
+    # voc_lines = [__single_expression2voc(key, labels_dict[key]) for key in labels_dict.keys()]
+    voc_lines = []
+    for key in labels_dict.keys():
+        voc_lines.extend(__single_expression2voc(key, labels_dict[key]))
     return voc_lines
 
 
-def __single_expression2voc(label: str, value_tuple: tuple) -> str:
+def __single_expression2voc(label: str, value_tuple: tuple) -> list:
+    """
+Returns the correct lines in the direct vocabulary for a single expression (variable).
+    :param label:
+    :param value_tuple:
+    :return: list of 2 strings, the definition of the type labelEntry and the function of that label
+    """
     type_ref = value_tuple[0]
     values = value_tuple[1]
     if type_ref in ['string', 'boolean']:
-        voc_line = 'type ' + label + ' constructed from {' + values + '}'
+        voc_entry_line = 'type ' + label + '_entry constructed from {' + values + '}'
     elif type_ref in ['integer']:
-        voc_line = 'type ' + label + ' isa int'
+        voc_entry_line = 'type ' + label + '_entry isa int'
     else:
         raise TypeError("type " + type_ref + ' unknown')
-    return voc_line
+    voc_function_line = label + ':' + label + '_entry'
+    return [voc_entry_line, voc_function_line]
 
 
 def list_meta_variables(labels: list) -> str:
     listing = '; '.join(labels)
     return listing
-
 
 
 def encode_comparison(comparator: str) -> str:
@@ -65,7 +74,7 @@ Determine domain and range of variables in the dictionary
 
 def build_meta_input_rule(labels: list, rule_components: list) -> list:
     """
-Make list of all rule components, ready to be entered in the IDP structure (with ";" separation between elements)
+Make list of all rule components, ready to be entered in the IDP structure (still needs ";" separation between elements)
     :param labels:
     :param rule_components:
     :return:
@@ -82,11 +91,12 @@ Make list of all rule components, ready to be entered in the IDP structure (with
             if entry is not None:
                 label = enquoted_labels[entry_nr]
                 (comparator, value) = entry
-                rule.extend(__build_single_input_entry(rule_nr + 1, label, comparator, value))
+                rule.extend(__build_single_input_rule(rule_nr + 1, label, comparator, value))
 
     return rule
 
-def __build_single_input_entry(rule_nr: int, label: str, comparator: str, value: str) -> list:
+
+def __build_single_input_rule(rule_nr: int, label: str, comparator: str, value: str) -> [str]:
     # case of range (transform into 2 rules and recursively deal with them)
     if comparator.startswith(('[', ']')):
         first_dict = {'[': '>=', ']': '>'}
@@ -96,17 +106,23 @@ def __build_single_input_entry(rule_nr: int, label: str, comparator: str, value:
         values = value.split('..')
 
         # recursive call
-        first_rule_comp = __build_single_input_entry(rule_nr, label, first_dict[inclusion_symbols[0]], values[0])
-        second_rule_comp = __build_single_input_entry(rule_nr, label, last_dict[inclusion_symbols[1]], values[1])
+        first_rule_comp = __build_single_input_rule(rule_nr, label, first_dict[inclusion_symbols[0]], values[0])
+        second_rule_comp = __build_single_input_rule(rule_nr, label, last_dict[inclusion_symbols[1]], values[1])
 
         entry = first_rule_comp + second_rule_comp
 
     else:
+        entry=[]
         comparator_name = encode_comparison(comparator)
-        # enquote non integer values
-        try:
-            int(value)
-        except ValueError:
-            value = text_tools.enquote(value)
-        entry = [str(rule_nr) + ',' + label + ',' + comparator_name + ',' + value]
+        rule_cases = value.split(", ")
+        # deal with multiple cases
+        for i in range(len(rule_cases)):
+            case = rule_cases[i]
+            case_nr = i+1
+            # enquote non integer values
+            try:
+                int(case)
+            except ValueError:
+                case = text_tools.enquote(case)
+            entry.append(str(rule_nr) + ',' + str(case_nr) + ',' + label + ',' + comparator_name + ',' + case)
     return entry

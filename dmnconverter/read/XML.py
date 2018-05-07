@@ -1,6 +1,6 @@
 from dmnconverter.tools.texttools import clean_text
 import re
-
+# FIXME: fix non-deterministic behaviour of 'find'!
 
 def read_expressions(ont: str, dec_table, category: str) -> dict:
     """ Read the expressions from the DMN table
@@ -33,7 +33,7 @@ def __read_values(ont: str, category: str, expression) -> tuple:
     if type_ref == 'string':
         values = clean_text(expression.find(ont + category + 'Values'))
     elif type_ref == 'boolean':
-        values = 'true,false'
+        values = 'True,False'
     elif type_ref == 'integer':
         values = 'int'
     else:
@@ -72,8 +72,10 @@ def __structure_comparison(entry: "XML inputEntry") -> (str, str):
     cleaned = clean_text(entry)
     if cleaned is None:
         return cleaned
-    content_pattern = re.compile('[\\w.]+')
+    content_pattern = re.compile('[ \\w,]+')
+
     content_match = re.search(content_pattern, cleaned)
+
     content = content_match.group(0)
 
     comparator = cleaned.replace(content, '')
@@ -83,4 +85,5 @@ def __structure_comparison(entry: "XML inputEntry") -> (str, str):
         comparator = '=<'
 
     content = content.strip('_')  # removes excess underscores
+    content = content.title()
     return comparator, content
