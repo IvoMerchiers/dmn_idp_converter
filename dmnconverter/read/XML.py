@@ -1,6 +1,24 @@
 from dmnconverter.tools.texttools import clean_text
+from dmnconverter.tools.decisiontable import DecisionTable
+
+import xml.etree.ElementTree as ElemTree
 import re
 # FIXME: fix non-deterministic behaviour of 'find'!
+
+
+def read_table(file_name: str, ontology: str ='{http://www.omg.org/spec/DMN/20151101/dmn.xsd}')->DecisionTable:
+    tree = ElemTree.parse(file_name)
+    root = tree.getroot()
+    table_name = root.find(ontology+ 'decision').attrib['name']
+    dec_table = root.find(ontology+ 'decision').find(ontology+ 'decisionTable')
+    input_label_dict = read_expressions(ontology, dec_table, 'input')
+    output_label_dict = read_expressions(ontology, dec_table, 'output')
+    rules = read_rules(ontology, dec_table)
+    input_rule_comp = rules[0]
+    output_rule_comp = rules[1]
+
+    return DecisionTable(ontology, table_name, input_label_dict, output_label_dict, input_rule_comp, output_rule_comp)
+
 
 def read_expressions(ont: str, dec_table, category: str) -> dict:
     """ Read the expressions from the DMN table

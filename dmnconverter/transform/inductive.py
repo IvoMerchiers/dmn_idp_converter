@@ -1,26 +1,29 @@
 import dmnconverter.tools.print as printer
 import dmnconverter.transform.general
+from dmnconverter.tools.decisiontable import DecisionTable
 
 
-def print_file(file_name, input_rule_comp: list, input_label_dict: dict,
-               output_rule_comp: list, output_label_dict: dict) -> None:
+def print_file(file_name, dmn_table: DecisionTable) -> None:
     """
     Print table as an idp file in the inductive framework
     :param file_name: name of output file
-    :param input_rule_comp: 2d array of rule components
-    :param input_label_dict: dictionary of labels and the tuple indicating their domain
-    :param output_rule_comp: 2d array of output rule comps
-    :param output_label_dict: dictionary of output labels and their domains
+    :param dmn_table: class containing all info about the current decisiontable
     """
+
+    # read out from structure
+    input_label_dict = dmn_table.input_label_dict
+    output_label_dict = dmn_table.output_label_dict
+    input_rule_comp = dmn_table.input_rule_comp
+    output_rule_comp = dmn_table.output_rule_comp
+    input_labels = dmn_table.input_labels
+    output_labels = dmn_table.output_labels
+
     # vocabulary uses the more general direct translation
     vocabulary = ["//Input Variables"]
     vocabulary.extend(dmnconverter.transform.general.direct_voc(input_label_dict))
     vocabulary.append('//Output Variables')
     vocabulary.extend(dmnconverter.transform.general.direct_voc(output_label_dict))
 
-    # Find output labels
-    input_labels = list(input_label_dict.keys())
-    output_labels = list(output_label_dict.keys())
     # Translate theory
     theory = __rules2theory(input_rule_comp, input_labels, output_rule_comp, output_labels)
     # print results

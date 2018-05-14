@@ -2,34 +2,35 @@ import dmnconverter.tools.print as printer
 import dmnconverter.tools.texttools as text_tools
 import dmnconverter.transform.general
 # TODO: get functions these out of general and put these into meta representation (or build proper class hiararchy).
+from dmnconverter.tools.decisiontable import DecisionTable
 from dmnconverter.transform.general import list_meta_variables, specify_meta_domain, build_meta_input_rule
 
 
-def print_file(file_name, input_rule_comp: list, input_label_dict: dict,
-               output_rule_comp: list, output_label_dict: dict) -> None:
+def print_file(file_name, dmn_table: DecisionTable) -> None:
     """
     Print table as a txt file in the meta framework. This means all info about specific dec table
     is in the structure.
     :param file_name: name of output file
-    :param input_rule_comp: 2d array of rule components
-    :param input_label_dict: dictionary of labels and the tuple indicating their domain
-    :param output_rule_comp: 2d array of output rule comps
-    :param output_label_dict: dictionary of output labels and their domains
+    :param dmn_table: class containing all info about the current decisiontable
     """
     # Some constants
     # TODO: proper method to introduce ranges of variables
     modelint_start = 0
     modelint_stop = 20
 
+    # read out from structure
+    input_label_dict = dmn_table.input_label_dict
+    output_label_dict = dmn_table.output_label_dict
+    input_rule_comp = dmn_table.input_rule_comp
+    output_rule_comp = dmn_table.output_rule_comp
+    input_labels = dmn_table.input_labels
+    output_labels = dmn_table.output_labels
+
     # Vocabulary is fixed
     vocabulary = meta_vocabulary()
 
     # Theory is fixed
     theory = meta_theory()
-
-    # Find labels
-    input_labels = list(input_label_dict.keys())
-    output_labels = list(output_label_dict.keys())
 
     # --- start building structure ---
     # ModelInt

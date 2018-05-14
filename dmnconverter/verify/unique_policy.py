@@ -1,13 +1,20 @@
 import dmnconverter.tools.print as printer
 import dmnconverter.transform.general as general
 import dmnconverter.tools.texttools as text_tools
+from dmnconverter.tools.decisiontable import DecisionTable
 
-def print_file(file_name, input_rule_comp: list, input_label_dict: dict) -> None:
+
+def print_file(file_name, dmn_table: DecisionTable) -> None:
 
     # Some constants
     # TODO: proper method to introduce ranges of variables
     modelint_start = 0
     modelint_stop = 20
+
+    # read out variables from structure
+    input_rule_comp = dmn_table.input_rule_comp
+    input_label_dict = dmn_table.input_label_dict
+    input_labels = dmn_table.input_labels
 
     # Vocabulary is fixed
     vocabulary = ["type RuleNr isa int",
@@ -68,9 +75,6 @@ def print_file(file_name, input_rule_comp: list, input_label_dict: dict) -> None
               "}"]
 
     # --- start building structure ---
-    # Find output labels
-    input_labels = list(input_label_dict.keys())
-
     # ModelInt
     structure = ["ModelInt = {" + str(modelint_start) + ".." + str(modelint_stop) + "}"]
 

@@ -11,6 +11,7 @@ import dmnconverter.transform.implicative
 import dmnconverter.transform.meta
 import dmnconverter.verify.unique_policy
 
+
 class DMNConverter:
     # define used ontology
     ont = '{http://www.omg.org/spec/DMN/20151101/dmn.xsd}'
@@ -21,6 +22,7 @@ class DMNConverter:
     def read(self, file_name):
         """Read DMN table, extract labels and rules"""
         try:
+            self.dmn_table = dmnconverter.read.XML.read_table(file_name)
             # Read and parse tree
             tree = ElemTree.parse(file_name)
             root = tree.getroot()
@@ -41,14 +43,14 @@ class DMNConverter:
             raise
 
     def print_inductive(self, file_name):
-        dmnconverter.transform.inductive.print_file(file_name, self.inputRuleComp, self.inputLabelDict, self.outputRuleComp, self.outputLabelDict)
+        dmnconverter.transform.inductive.print_file(file_name, self.dmn_table)
 
     def print_implicative(self, file_name):
-        dmnconverter.transform.implicative.print_file(file_name, self.inputRuleComp, self.inputLabelDict, self.outputRuleComp, self.outputLabelDict)
+        dmnconverter.transform.implicative.print_file(file_name, self.dmn_table)
 
     def print_meta(self, file_name):
-        dmnconverter.transform.meta.print_file(file_name, self.inputRuleComp, self.inputLabelDict, self.outputRuleComp, self.outputLabelDict)
+        dmnconverter.transform.meta.print_file(file_name, self.dmn_table)
 
     def verify_unique(self, file_name):
-        dmnconverter.verify.unique_policy.print_file(file_name, self.inputRuleComp, self.inputLabelDict)
+        dmnconverter.verify.unique_policy.print_file(file_name, self.dmn_table)
 
