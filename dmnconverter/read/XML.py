@@ -3,14 +3,40 @@ from dmnconverter.tools.decisiontable import DecisionTable
 
 import xml.etree.ElementTree as ElemTree
 import re
+
+
 # FIXME: fix non-deterministic behaviour of 'find'!
+# TODO: test multiple tables.
 
-
-def read_table(file_name: str, ontology: str ='{http://www.omg.org/spec/DMN/20151101/dmn.xsd}')->DecisionTable:
+def read_tables(file_name: str, ontology: str = '{http://www.omg.org/spec/DMN/20151101/dmn.xsd}') -> [DecisionTable]:
     tree = ElemTree.parse(file_name)
     root = tree.getroot()
-    table_name = root.find(ontology+ 'decision').attrib['name']
-    dec_table = root.find(ontology+ 'decision').find(ontology+ 'decisionTable')
+    decisions = root.findall(ontology + 'decision')  # this is defined in the XML structure
+    return [read_table(decision, ontology) for decision in decisions]
+
+
+def read_table(decision, ontology: str) -> DecisionTable:
+    """
+Reads out a given dmn table.
+    :param decision: Defined in XML structure, contains both meta info about the decision table and the actual table.
+    :param ontology: ontology used in the proces
+    :return:
+    """
+    table_name = decision.attrib['name']
+    dec_table = decision.find(ontology + 'decisionTable')
+    input_label_dict = read_expressions(ontology, dec_table, 'input')
+    output_label_dict = read_expressions(ontology, dec_table, 'output')
+    rules = read_rules(ontology, dec_table)
+    input_rule_comp = rules[0]
+    output_rule_comp = rules[1]
+    return DecisionTable(ontology, table_name, input_label_dict, output_label_dict, input_rule_comp, output_rule_comp)
+
+# TODO: deprecated class
+def read_table2(file_name: str, ontology: str = '{http://www.omg.org/spec/DMN/20151101/dmn.xsd}') -> DecisionTable:
+    tree = ElemTree.parse(file_name)
+    root = tree.getroot()
+    table_name = root.find(ontology + 'decision').attrib['name']
+    dec_table = root.find(ontology + 'decision').find(ontology + 'decisionTable')
     input_label_dict = read_expressions(ontology, dec_table, 'input')
     output_label_dict = read_expressions(ontology, dec_table, 'output')
     rules = read_rules(ontology, dec_table)
