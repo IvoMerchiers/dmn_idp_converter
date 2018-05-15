@@ -24,26 +24,13 @@ Reads out a given dmn table.
     """
     table_name = decision.attrib['name']
     dec_table = decision.find(ontology + 'decisionTable')
+    hit_policy = __read_hit_policy(dec_table)
     input_label_dict = read_expressions(ontology, dec_table, 'input')
     output_label_dict = read_expressions(ontology, dec_table, 'output')
     rules = read_rules(ontology, dec_table)
     input_rule_comp = rules[0]
     output_rule_comp = rules[1]
-    return DecisionTable(ontology, table_name, input_label_dict, output_label_dict, input_rule_comp, output_rule_comp)
-
-# TODO: deprecated class
-def read_table2(file_name: str, ontology: str = '{http://www.omg.org/spec/DMN/20151101/dmn.xsd}') -> DecisionTable:
-    tree = ElemTree.parse(file_name)
-    root = tree.getroot()
-    table_name = root.find(ontology + 'decision').attrib['name']
-    dec_table = root.find(ontology + 'decision').find(ontology + 'decisionTable')
-    input_label_dict = read_expressions(ontology, dec_table, 'input')
-    output_label_dict = read_expressions(ontology, dec_table, 'output')
-    rules = read_rules(ontology, dec_table)
-    input_rule_comp = rules[0]
-    output_rule_comp = rules[1]
-
-    return DecisionTable(ontology, table_name, input_label_dict, output_label_dict, input_rule_comp, output_rule_comp)
+    return DecisionTable(ontology, table_name, hit_policy, input_label_dict, output_label_dict, input_rule_comp, output_rule_comp)
 
 
 def read_expressions(ont: str, dec_table, category: str) -> dict:
@@ -129,5 +116,15 @@ def __structure_comparison(entry: "XML inputEntry") -> (str, str):
         comparator = '=<'
 
     content = content.strip('_')  # removes excess underscores
-    content = content.title()
+    content = content.title()  # standardize capitalization
     return comparator, content
+
+
+def __read_hit_policy(dec_table) ->str:
+
+    try:
+        hit_policy: str = dec_table.attrib['hitPolicy']
+    except KeyError:
+        hit_policy = 'unique'
+
+    return hit_policy.lower()

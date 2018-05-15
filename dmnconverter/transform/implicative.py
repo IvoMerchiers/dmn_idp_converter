@@ -3,23 +3,13 @@ from dmnconverter.tools.decisiontable import DecisionTable
 
 
 class ImplicativeConverter(DirectConverter):
-    def convert(self, decision_tables: [DecisionTable]) -> ([str], [str], [str]):
-        dmn_table = decision_tables[0]
-        # read out from structure
+
+    def build_theory(self, dmn_table: DecisionTable) -> [str]:
+        """returns list of string lines representing all the rules in the theory"""
         input_rule_comp = dmn_table.input_rule_comp
         output_rule_comp = dmn_table.output_rule_comp
         input_labels = dmn_table.input_labels
         output_labels = dmn_table.output_labels
-
-        vocabulary = self.build_vocabulary(dmn_table)
-
-        # Translate theory
-        theory = self.build_theory(input_rule_comp, input_labels, output_rule_comp, output_labels)
-        # print results
-        return vocabulary, theory, []
-
-    def build_theory(self, input_rule_comp: list, input_labels: list, output_rule_comp: list, output_labels: list):
-        """returns list of string lines representing all the rules in the theory"""
         theory_lines = []
         for i in range(len(input_rule_comp)):  # loop over all rules
             theory_lines.append(
