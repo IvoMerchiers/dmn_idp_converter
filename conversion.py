@@ -3,7 +3,7 @@ from dmnconverter.converter import DMNConverter as Dmn
 
 # --- values---
 directory = '..\DMNTables\\'
-file_name = "ChainBBQ"
+file_name = "chainBBQ"
 
 # fileName = "..\DMNTables\BepaalTypeWoningBoolean.dmn"
 # outputName = 'RunningExample.idp'

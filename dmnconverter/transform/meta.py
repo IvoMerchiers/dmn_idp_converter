@@ -4,7 +4,6 @@ from boltons.setutils import IndexedSet
 import dmnconverter.tools.texttools as text_tools
 
 
-# TODO: get functions these out of general and put these into meta representation (or build proper class hiararchy).
 from dmnconverter.tools.decisiontable import DecisionTable
 from dmnconverter.transform.general import MetaLanguageConverter
 
@@ -165,7 +164,8 @@ Adds the name of the relevant table to the start of every element in the list.
             "!tN[TableName], rN[RuleNr],var[InputVariable]: Match(tN, rN, var)<- ?cN[CaseNr]: ?val1[Value], "
             "op1[Operator]: RuleIn(tN,rN,cN,var,op1, val1) & ( !val2[Value], op2[Operator]: RuleIn(tN,rN,cN,var, op2, "
             "val2) => Compare(var,op2,val2) ).",
-            "!rN[RuleNr],var[InputVariable]: Match(tN,rN,var) <- ?0 val[Value],cN[CaseNr], op[Operator]: RuleIn(tN,"
+            "!tN[TableName], rN[RuleNr], var[InputVariable]: Match(tN,rN,var) <- ?0 val[Value],cN[CaseNr], "
+            "op[Operator]: RuleIn(tN, "
             "rN, cN,var, op, val).",
             "}",
             "",
