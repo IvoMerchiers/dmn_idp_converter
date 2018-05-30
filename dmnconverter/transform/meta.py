@@ -9,9 +9,6 @@ from dmnconverter.transform.general import MetaLanguageConverter
 
 
 class MetaConverter(MetaLanguageConverter):
-    # TODO encode this better?
-    def build_structure(self, decision_table: DecisionTable) -> [str]:
-        pass
 
     def convert(self, decision_tables: [DecisionTable]) -> ([str], [str], [str]):
 
@@ -85,6 +82,18 @@ Build a dictionary of the structure for a specific decision table
         # Priorities
 
         return structure_dict
+
+    def build_structure(self, decision_table: DecisionTable) -> [str]:
+        structure_dict = self.build_structure_dict(decision_table)
+        predicate_names = structure_dict.keys()
+        structure: [str] = []
+        for predicate in predicate_names:
+            value_list = structure_dict[predicate]
+            # remove doubles
+            unique_value_list = list(IndexedSet(value_list))
+            values_string = '; '.join(unique_value_list)
+            structure.append(predicate + " = {" + values_string + "}")
+        return structure
 
     @staticmethod
     def add_table_name(dmn_table: DecisionTable, string_list: [str]) -> [str]:

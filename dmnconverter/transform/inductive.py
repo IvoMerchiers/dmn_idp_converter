@@ -14,7 +14,7 @@ class InductiveConverter(DirectConverter):
 
         theory_lines = ['{']
         rules = [
-            self.__translate_inductive(input_labels, input_rule_comp[rule_nr], output_labels, output_rule_comp[rule_nr])
+            self.__inductive_single_rule(input_labels, input_rule_comp[rule_nr], output_labels, output_rule_comp[rule_nr])
             for
             rule_nr in
             range(len(input_rule_comp))]
@@ -22,8 +22,8 @@ class InductiveConverter(DirectConverter):
         theory_lines.append('}')
         return theory_lines
 
-    def __translate_inductive(self, input_labels: [str], input_rule_entries: [(str, str)], output_labels: [str],
-                              output_rule_entries: [(str, str)]) -> str:
+    def __inductive_single_rule(self, input_labels: [str], input_rule_entries: [(str, str)], output_labels: [str],
+                                output_rule_entries: [(str, str)]) -> str:
         # TODO: reading out entries can probably be put into super class and combined with implicativeConverter
         """
     Returns a single inductive rule as a string.

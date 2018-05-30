@@ -6,7 +6,6 @@ import re
 
 
 # FIXME: fix non-deterministic behaviour of 'find'!
-# TODO: test multiple tables.
 
 def read_tables(file_name: str, ontology: str = '{http://www.omg.org/spec/DMN/20151101/dmn.xsd}') -> [DecisionTable]:
     tree = ElemTree.parse(file_name)
