@@ -196,7 +196,7 @@ Adds the name of the relevant table to the start of every element in the list.
             "// for all good values within the range, link these to the domain",
             "!var[Variable], minVal[Value], maxVal[Value]: Range(var, minVal, maxVal) => (minVal =< VarValue(var) =< "
             "maxVal).",
-            "// If a domain is defined, all variable assignments match it.x",
+            "// If a domain is defined, all variable assignments match it.",
             "!var[Variable], val1[Value]: ?val2[Value]: Domain(var,val1)=> (Domain(var,val2) & VarValue(var)=val2).",
             "// DEFINE COMPARISON OPERATORS",
             "{  ",

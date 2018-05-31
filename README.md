@@ -1,15 +1,26 @@
 # dmn_idp_converter
 ## Summary
-Converter to translate DMN tables into IDP3 code
-DMN tables as defined by the OMG standard.
-IDP3 as developped by the KuL DTAI group.
+Converter to translate Camunda DMN tables into IDP3 code
+
+
+## Installation
+### Dependencies
+This package only relies on the python standard library:
+* [xml](https://docs.python.org/3.5/library/xml.etree.elementtree.html#xml.etree.ElementTree.XML)
+* [re](https://docs.python.org/3.5/library/re.html)
+
+### Installing the package
+```
+pip install git+git://github.com/IvoMerchiers/dmn_idp_converter
+```
 
 ## Supported DMN tables
 Currently only DMN tables created by the [Camunda Modeller](https://camunda.com/download/modeler/) are supported.
+Other XML representations of DMN tables might work if they use the official OMG standard, but this has not been tested.
 Networks of DMN tables are also supported, as long as there are no name-space conflicts.
 
 ## Supported output
-The package converts the DMN table into IDP code. Multiple transformations are possible, with distinct goals.
+The package converts the DMN table into IDP3 code. Multiple transformations are possible, with distinct goals.
 
 * **Direct translation:** Focusses on speed and human-readability. Only supports 'Unique' hit policy
   * Inductive formalism: Most performant version, using FO(.) definitions
@@ -19,3 +30,17 @@ The package converts the DMN table into IDP code. Multiple transformations are p
   * Core meta model: Model that encodes the full DMN tables for multiple hit polices 
   * Table verification: Can find inconsistencies in single table.
   * Rule Learning: Can combine given rules and data to find a consistent DMN table.
+ 
+Information on how to run IDP code can be found on [the official site](https://dtai.cs.kuleuven.be/software/idp).
+
+  
+## Author
+* **Ivo Merchiers** - *Development* - [IvoMerchiers](https://github.com/IvoMerchiers) 
+
+## License
+This project is licensed under the MIT Licens - see the [License.md](LICENSE.md) file for details
+
+## Acknowledgements
+* Developed for a KUL thesis
+* Assisted by Simon Marynissen
+* Table verification approach inspired by [Calvanese et al.](https://arxiv.org/abs/1603.07466v1)
