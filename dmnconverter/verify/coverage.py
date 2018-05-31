@@ -1,16 +1,42 @@
 from dmnconverter.transform.general import MetaLanguageConverter
-import dmnconverter.tools.print as printer
-import dmnconverter.transform.general as general
 import dmnconverter.tools.texttools as text_tools
 from dmnconverter.tools.decisiontable import DecisionTable
+import warnings
 
 
 class Coverage(MetaLanguageConverter):
     def convert(self, decision_tables: [DecisionTable]) -> ([str], [str], [str]):
-        pass
+        if len(decision_tables) > 1:
+            warnings.warn("Only first table is verified even though multiple DMN tables were given")
+        dmn_table: DecisionTable = decision_tables[0]
+
+        vocabulary: [str] = self.build_vocabulary(dmn_table)
+        theory = self.build_theory(dmn_table)
+        structure = self.build_structure(dmn_table)
+        return vocabulary, theory, structure
 
     def build_structure(self, decision_table: DecisionTable) -> [str]:
-        pass
+        # ModelInt
+        # TODO: proper method to introduce ranges of variables
+        modelint_start = 0
+        modelint_stop = 30
+        structure = ["ModelInt = {" + str(modelint_start) + ".." + str(modelint_stop) + "}"]
+
+        # Variables
+        structure.append(
+            'Variable = {' + self.list_meta_variables(text_tools.enquote_list(decision_table.input_labels)) + '}')
+
+        # Domain and ranges
+        (input_domain, input_range) = self.specify_meta_domain(decision_table.input_label_dict, 0, 20)
+
+        # add to structure
+        structure.append('Domain = {' + '; '.join(text_tools.make_str(input_domain)) + '}')
+        structure.append('Range = {' + '; '.join(text_tools.make_str(input_range)) + '}')
+
+        #  Rule components
+        structure.append('RuleIn = {' + '; '.join(
+            self.build_meta_input_rule(decision_table.input_labels, decision_table.input_rule_comp)) + '}')
+        return structure
 
     def build_vocabulary(self, decision_table: DecisionTable) -> [str]:
         vocabulary = ["type RuleNr isa int",
@@ -24,7 +50,7 @@ class Coverage(MetaLanguageConverter):
                       "// Assigns a value to a variable",
                       "VarValue(Variable):Value",
                       "",
-                      "// Needed to identfiy satisfied rules",
+                      "// Needed to identify satisfied rules",
                       "Match(RuleNr,Variable)",
                       "Triggered(RuleNr)    ",
                       "CountTriggers:int",
@@ -45,9 +71,11 @@ class Coverage(MetaLanguageConverter):
     def build_theory(self, decision_table: DecisionTable) -> [str]:
         theory = ["// CORRECT UNDERSTANDING OF RULES    ",
                   "{",
-                  "	!rN[RuleNr],var[InputVariable]: Match(rN,var)<- ?cN[CaseNr]: ?val1[Value], op1[Operator]: RuleIn(rN,cN,var,op1, val1) & (",
+                  "!rN[RuleNr],var[InputVariable]: Match(rN,var)<- ?cN[CaseNr]: ?val1[Value], op1[Operator]: RuleIn("
+                  "rN,cN,var,op1, val1) & (",
                   "!val2[Value], op2[Operator]: RuleIn(rN,cN,var, op2, val2) => Compare(var,op2,val2) ).",
-                  "   !rN[RuleNr],var[InputVariable]: Match(rN,var) <- ?0 val[Value],cN[CaseNr], op[Operator]: RuleIn(rN, cN,var, op, val).",
+                  "!rN[RuleNr],var[InputVariable]: Match(rN,var) <- ?0 val[Value],cN[CaseNr], op[Operator]: RuleIn("
+                  "rN, cN,var, op, val).",
                   "}",
                   "",
                   "// Define when a rule is triggered",
@@ -55,8 +83,8 @@ class Coverage(MetaLanguageConverter):
                   "",
                   "",
                   "",
-                  "// TABLE VERIFICATION",
-                  "CountTriggers = #{rN[RuleNr]:Triggered(rN)}~=1.",
+                  "// TABLE COVERAGE CHECK",
+                  "CountTriggers = #{rN[RuleNr]:Triggered(rN)}=0.",
                   "",
                   "",
                   "// RESTRICT DOMAINS & RANGES",
@@ -75,5 +103,3 @@ class Coverage(MetaLanguageConverter):
                   "	!a[Variable], val[Value]: Compare(a, geq, val) <-  VarValue(a)>=val.",
                   "}"]
         return theory
-
-
