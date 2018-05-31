@@ -8,6 +8,12 @@ import re
 # FIXME: fix non-deterministic behaviour of 'find'!
 
 def read_tables(file_name: str, ontology: str = '{http://www.omg.org/spec/DMN/20151101/dmn.xsd}') -> [DecisionTable]:
+    """
+Reads out a dmn table stored as XML file and returns it as a list of decisiontables
+    :param file_name: complete file path or relative to call location
+    :param ontology: used ontology in the XML table
+    :return: list of DecisionTable objects
+    """
     tree = ElemTree.parse(file_name)
     root = tree.getroot()
     decisions = root.findall(ontology + 'decision')  # this is defined in the XML structure
@@ -19,7 +25,7 @@ def read_table(decision, ontology: str) -> DecisionTable:
 Reads out a given dmn table.
     :param decision: Defined in XML structure, contains both meta info about the decision table and the actual table.
     :param ontology: ontology used in the proces
-    :return:
+    :return: DecisionTable object
     """
     table_name = decision.attrib['name']
     dec_table = decision.find(ontology + 'decisionTable')

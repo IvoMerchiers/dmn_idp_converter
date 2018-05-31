@@ -24,4 +24,9 @@ def enquote(string: str) -> str:
 
 
 def enquote_list(old_list: [str]) -> [str]:
+    """
+Adds quotes to every element of the list
+    :param old_list:
+    :return:
+    """
     return [enquote(string) for string in old_list]

@@ -141,6 +141,11 @@ class MetaLanguageConverter(GeneralConverter):
         pass
 
     def structure_variables(self, dmn_table: DecisionTable) -> ([str], [str]):
+        """
+Reads out input and output variables from a DecisionTable for usage in the structure
+        :param dmn_table: DecisionTable object
+        :return: tuple of lists of strings indicating respectively input and output variables
+        """
         input_labels = dmn_table.input_labels
         output_labels = dmn_table.output_labels
 

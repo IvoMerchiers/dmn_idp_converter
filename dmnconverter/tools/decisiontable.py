@@ -1,5 +1,6 @@
 class DecisionTable:
     """"
+Structure to store information about a decision table
     :param input_rule_comp: 2d array of rule components
     :param input_label_dict: dictionary of labels and the tuple indicating their domain
     :param output_rule_comp: 2d array of output rule comps

@@ -4,6 +4,7 @@ import dmnconverter.tools.texttools as text_tools
 from dmnconverter.tools.decisiontable import DecisionTable
 from dmnconverter.transform.general import MetaLanguageConverter
 
+
 class UniquePolicy(MetaLanguageConverter):
     def convert(self, decision_tables: [DecisionTable]) -> ([str], [str], [str]):
         # Some constants
