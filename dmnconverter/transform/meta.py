@@ -3,13 +3,11 @@ from boltons.setutils import IndexedSet
 
 import dmnconverter.tools.texttools as text_tools
 
-
 from dmnconverter.tools.decisiontable import DecisionTable
-from dmnconverter.transform.general import MetaLanguageConverter
+from dmnconverter.transform.meta_language import MetaLanguageConverter
 
 
 class MetaConverter(MetaLanguageConverter):
-
     def convert(self, decision_tables: [DecisionTable]) -> ([str], [str], [str]):
 
         vocabulary = self.build_vocabulary()
@@ -30,70 +28,55 @@ class MetaConverter(MetaLanguageConverter):
         return vocabulary, theory, structure
 
     def build_structure_dict(self, dmn_table: DecisionTable) -> dict:
-        """
-Build a dictionary of the structure for a specific decision table
-        :rtype: dict
-        :param dmn_table:
-        :return: dictionary with keys the name of the relevant predicate. Values are lists containing all the relevant entries.
-        """
-        modelint_start = 0
-        modelint_stop = 20
+            """
+    Build a dictionary of the structure for a specific decision table in the meta formalism
+            :rtype: dict
+            :param dmn_table:
+            :return: dictionary with keys the name of the relevant predicate. Values are lists containing all the relevant entries.
+            """
+            # todo: good method for this
+            modelint_start = 0
+            modelint_stop = 20
 
-        structure_dict = dict()
+            structure_dict = dict()
 
-        # Model int
-        structure_dict['ModelInt'] = [str(modelint_start) + ".." + str(modelint_stop)]
+            # Model int
+            structure_dict['ModelInt'] = [str(modelint_start) + ".." + str(modelint_stop)]
 
-        # Table Name
-        structure_dict['TableName'] = [dmn_table.table_name]
+            # Table Name
+            structure_dict['TableName'] = [dmn_table.table_name]
 
-        # Variables
-        (input_variables, output_variables) = self.structure_variables(dmn_table)
-        structure_dict['InputVariable '] = input_variables
-        structure_dict['OutputVariable '] = output_variables
+            # Variables
+            (input_variables, output_variables) = self.structure_variables(dmn_table)
+            structure_dict['InputVariable '] = input_variables
+            structure_dict['OutputVariable '] = output_variables
 
-        # Domain and ranges
-        input_label_dict = dmn_table.input_label_dict
-        output_label_dict = dmn_table.output_label_dict
+            # Domain and ranges
+            input_label_dict = dmn_table.input_label_dict
+            output_label_dict = dmn_table.output_label_dict
 
-        (input_domain, input_range) = self.specify_meta_domain(input_label_dict, modelint_start, modelint_stop)
-        (output_domain, output_range) = self.specify_meta_domain(output_label_dict, modelint_start, modelint_stop)
+            (input_domain, input_range) = self.specify_meta_domain(input_label_dict, modelint_start, modelint_stop)
+            (output_domain, output_range) = self.specify_meta_domain(output_label_dict, modelint_start, modelint_stop)
 
-        domain = input_domain + output_domain
-        ranges = input_range + output_range
-        # add enumerated domains and ranges to structure
-        structure_dict['RuleIn'] = text_tools.make_str(domain)
-        structure_dict['RuleOut'] = text_tools.make_str(ranges)
+            domain = input_domain + output_domain
+            ranges = input_range + output_range
+            # add enumerated domains and ranges to structure
+            structure_dict['Domain'] = text_tools.make_str(domain)
+            structure_dict['Range'] = text_tools.make_str(ranges)
 
-        # Policies
-        structure_dict['TablePolicy'] = [dmn_table.table_name + "," + dmn_table.hit_policy]
+            # Policies
+            structure_dict['TablePolicy'] = [dmn_table.table_name + "," + dmn_table.hit_policy]
 
-        #  Rule components
-        input_rule_comp = dmn_table.input_rule_comp
-        output_rule_comp = dmn_table.output_rule_comp
-        input_labels = dmn_table.input_labels
-        output_labels = dmn_table.output_labels
-        # TODO: make these following functions take decision table as input
-        input_rules = self.build_meta_input_rule(input_labels, input_rule_comp)
-        output_rules = self.__build_output_rule(output_labels, output_rule_comp)
-        structure_dict['RuleIn'] = self.add_table_name(dmn_table, input_rules)
-        structure_dict['RuleOut'] = self.add_table_name(dmn_table, output_rules)
+            #  Rule components
+            input_rules = super().build_meta_input_rule(dmn_table)
+            output_rules = super().build_output_rule(dmn_table)
+            structure_dict['RuleIn'] = self.add_table_name(dmn_table, input_rules)
+            structure_dict['RuleOut'] = self.add_table_name(dmn_table, output_rules)
 
-        # Priorities
+            # Priorities
+            # fixme support priorities
+            return structure_dict
 
-        return structure_dict
-
-    def build_structure(self, decision_table: DecisionTable) -> [str]:
-        structure_dict = self.build_structure_dict(decision_table)
-        predicate_names = structure_dict.keys()
-        structure: [str] = []
-        for predicate in predicate_names:
-            value_list = structure_dict[predicate]
-            # remove doubles
-            unique_value_list = list(IndexedSet(value_list))
-            values_string = '; '.join(unique_value_list)
-            structure.append(predicate + " = {" + values_string + "}")
-        return structure
 
     @staticmethod
     def add_table_name(dmn_table: DecisionTable, string_list: [str]) -> [str]:
@@ -105,26 +88,6 @@ Adds the name of the relevant table to the start of every element in the list.
         table_name = dmn_table.table_name
         return [table_name + "," + element for element in string_list]
 
-    @staticmethod
-    def __build_output_rule(labels: list, rule_components: list) -> [str]:
-        rule = []
-        amount_entries = len(labels)
-        enquoted_labels = text_tools.enquote_list(labels)
-
-        for rule_nr in range(len(rule_components)):
-            rule_component = rule_components[rule_nr]
-            for entry_nr in range(amount_entries):
-                entry = rule_component[entry_nr]
-                if entry is not None:
-                    label = enquoted_labels[entry_nr]
-                    (comparator, value) = entry
-                    # enquote non integer values
-                    try:
-                        int(value)
-                    except ValueError:
-                        value = text_tools.enquote(value)
-                    rule.append(str(rule_nr + 1) + ',' + label + ',' + value)
-        return rule
     # Todo: update vocabulary and adapt to number of tables!
     @staticmethod
     def build_vocabulary(**kwargs) -> [str]:
@@ -208,6 +171,3 @@ Adds the name of the relevant table to the start of every element in the list.
             "}"
         ]
         return theory
-
-
-

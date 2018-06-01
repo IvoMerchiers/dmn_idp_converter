@@ -1,19 +1,9 @@
-from dmnconverter.transform.general import MetaLanguageConverter
 import dmnconverter.tools.texttools as text_tools
 from dmnconverter.tools.decisiontable import DecisionTable
-import warnings
+from dmnconverter.verify.verfication import Verification
 
 
-class Coverage(MetaLanguageConverter):
-    def convert(self, decision_tables: [DecisionTable]) -> ([str], [str], [str]):
-        if len(decision_tables) > 1:
-            warnings.warn("Only first table is verified even though multiple DMN tables were given")
-        dmn_table: DecisionTable = decision_tables[0]
-
-        vocabulary: [str] = self.build_vocabulary(dmn_table)
-        theory = self.build_theory(dmn_table)
-        structure = self.build_structure(dmn_table)
-        return vocabulary, theory, structure
+class Coverage(Verification):
 
     def build_structure(self, decision_table: DecisionTable) -> [str]:
         # ModelInt
@@ -24,10 +14,10 @@ class Coverage(MetaLanguageConverter):
 
         # Variables
         structure.append(
-            'Variable = {' + self.list_meta_variables(text_tools.enquote_list(decision_table.input_labels)) + '}')
+            'Variable = {' + super().list_meta_variables(text_tools.enquote_list(decision_table.input_labels)) + '}')
 
         # Domain and ranges
-        (input_domain, input_range) = self.specify_meta_domain(decision_table.input_label_dict, 0, 20)
+        (input_domain, input_range) = super().specify_meta_domain(decision_table.input_label_dict, 0, 20)
 
         # add to structure
         structure.append('Domain = {' + '; '.join(text_tools.make_str(input_domain)) + '}')
@@ -35,7 +25,7 @@ class Coverage(MetaLanguageConverter):
 
         #  Rule components
         structure.append('RuleIn = {' + '; '.join(
-            self.build_meta_input_rule(decision_table.input_labels, decision_table.input_rule_comp)) + '}')
+            super().build_meta_input_rule(decision_table.input_labels, decision_table.input_rule_comp)) + '}')
         return structure
 
     def build_vocabulary(self, decision_table: DecisionTable) -> [str]:
