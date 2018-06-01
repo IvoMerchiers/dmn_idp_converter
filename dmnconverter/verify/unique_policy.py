@@ -8,7 +8,7 @@ from dmnconverter.tools.decisiontable import DecisionTable
 from dmnconverter.verify.coverage import Coverage
 
 
-class UniquePolicy(Coverage):
+class VerifyUniquePolicy(Coverage):
     """"
     Is essentially the same as coverage detection, with one line changed in the theory
     """

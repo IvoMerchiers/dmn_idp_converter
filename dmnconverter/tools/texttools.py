@@ -1,4 +1,3 @@
-
 def clean_text(entry) -> str:
     """removes accents and adds underscores inside space separated strings"""
     text = entry[0].text

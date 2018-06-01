@@ -7,6 +7,7 @@ import warnings
 from dmnconverter.tools.decisiontable import DecisionTable
 from dmnconverter.transform.meta_language import MetaLanguageConverter
 from dmnconverter.tools import texttools as text_tools
+# from dmnconverter.verify.unique_policy import VerifyUniquePolicy
 
 
 class Verification(MetaLanguageConverter):
@@ -14,6 +15,10 @@ class Verification(MetaLanguageConverter):
         if len(decision_tables) > 1:
             warnings.warn("Only first table is verified even though multiple DMN tables were given")
         dmn_table: DecisionTable = decision_tables[0]
+
+        # todo : automatically go to single hit policy if needed
+        # if dmn_table.hit_policy == 'Unique':
+        #     return VerifyUniquePolicy().convert(decision_tables)
 
         vocabulary: [str] = self.build_vocabulary(dmn_table)
         theory = self.build_theory(dmn_table)
@@ -54,6 +59,7 @@ Build structure dictionary for general verification of a single table
         structure_dict['Range'] = text_tools.make_str(ranges)
 
         # Policies
+        # fixme: currently still brackets around this when building structure
         structure_dict['TablePolicy'] = [dmn_table.hit_policy]
 
         #  Rule components

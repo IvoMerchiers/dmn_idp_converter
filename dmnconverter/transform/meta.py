@@ -9,7 +9,6 @@ from dmnconverter.transform.meta_language import MetaLanguageConverter
 
 class MetaConverter(MetaLanguageConverter):
     def convert(self, decision_tables: [DecisionTable]) -> ([str], [str], [str]):
-
         vocabulary = self.build_vocabulary()
         theory = self.build_theory()
 
@@ -28,55 +27,54 @@ class MetaConverter(MetaLanguageConverter):
         return vocabulary, theory, structure
 
     def build_structure_dict(self, dmn_table: DecisionTable) -> dict:
-            """
+        """
     Build a dictionary of the structure for a specific decision table in the meta formalism
             :rtype: dict
             :param dmn_table:
             :return: dictionary with keys the name of the relevant predicate. Values are lists containing all the relevant entries.
             """
-            # todo: good method for this
-            modelint_start = 0
-            modelint_stop = 20
+        # todo: good method for this
+        modelint_start = 0
+        modelint_stop = 20
 
-            structure_dict = dict()
+        structure_dict = dict()
 
-            # Model int
-            structure_dict['ModelInt'] = [str(modelint_start) + ".." + str(modelint_stop)]
+        # Model int
+        structure_dict['ModelInt'] = [str(modelint_start) + ".." + str(modelint_stop)]
 
-            # Table Name
-            structure_dict['TableName'] = [dmn_table.table_name]
+        # Table Name
+        structure_dict['TableName'] = [dmn_table.table_name]
 
-            # Variables
-            (input_variables, output_variables) = self.structure_variables(dmn_table)
-            structure_dict['InputVariable '] = input_variables
-            structure_dict['OutputVariable '] = output_variables
+        # Variables
+        (input_variables, output_variables) = self.structure_variables(dmn_table)
+        structure_dict['InputVariable '] = input_variables
+        structure_dict['OutputVariable '] = output_variables
 
-            # Domain and ranges
-            input_label_dict = dmn_table.input_label_dict
-            output_label_dict = dmn_table.output_label_dict
+        # Domain and ranges
+        input_label_dict = dmn_table.input_label_dict
+        output_label_dict = dmn_table.output_label_dict
 
-            (input_domain, input_range) = self.specify_meta_domain(input_label_dict, modelint_start, modelint_stop)
-            (output_domain, output_range) = self.specify_meta_domain(output_label_dict, modelint_start, modelint_stop)
+        (input_domain, input_range) = self.specify_meta_domain(input_label_dict, modelint_start, modelint_stop)
+        (output_domain, output_range) = self.specify_meta_domain(output_label_dict, modelint_start, modelint_stop)
 
-            domain = input_domain + output_domain
-            ranges = input_range + output_range
-            # add enumerated domains and ranges to structure
-            structure_dict['Domain'] = text_tools.make_str(domain)
-            structure_dict['Range'] = text_tools.make_str(ranges)
+        domain = input_domain + output_domain
+        ranges = input_range + output_range
+        # add enumerated domains and ranges to structure
+        structure_dict['Domain'] = text_tools.make_str(domain)
+        structure_dict['Range'] = text_tools.make_str(ranges)
 
-            # Policies
-            structure_dict['TablePolicy'] = [dmn_table.table_name + "," + dmn_table.hit_policy]
+        # Policies
+        structure_dict['TablePolicy'] = [dmn_table.table_name + "," + dmn_table.hit_policy]
 
-            #  Rule components
-            input_rules = super().build_meta_input_rule(dmn_table)
-            output_rules = super().build_output_rule(dmn_table)
-            structure_dict['RuleIn'] = self.add_table_name(dmn_table, input_rules)
-            structure_dict['RuleOut'] = self.add_table_name(dmn_table, output_rules)
+        #  Rule components
+        input_rules = super().build_meta_input_rule(dmn_table)
+        output_rules = super().build_output_rule(dmn_table)
+        structure_dict['RuleIn'] = self.add_table_name(dmn_table, input_rules)
+        structure_dict['RuleOut'] = self.add_table_name(dmn_table, output_rules)
 
-            # Priorities
-            # fixme support priorities
-            return structure_dict
-
+        # Priorities
+        # fixme support priorities
+        return structure_dict
 
     @staticmethod
     def add_table_name(dmn_table: DecisionTable, string_list: [str]) -> [str]:

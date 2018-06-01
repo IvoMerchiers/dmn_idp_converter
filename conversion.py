@@ -1,16 +1,13 @@
 
-from dmnconverter.converter import DMNConverter as Dmn
+from dmnconverter.converter import DMNConverter
 
-# --- values---
+# --- Paths ---
 directory = '..\DMNTables\\'
 file_name = "chainBBQ"
-
-# fileName = "..\DMNTables\BepaalTypeWoningBoolean.dmn"
-# outputName = 'RunningExample.idp'
-
-# ---- Script----
 file_location = directory + file_name + '.dmn'
 output_name = file_name + '.idp'
-conv = Dmn()
-conv.read(file_location)
-conv.print_inductive(output_name)
+
+# --- Convert ---
+converter = DMNConverter()
+converter.read(file_location)
+converter.verify_all(output_name)

@@ -54,6 +54,11 @@ Reads out input and output variables from a DecisionTable for usage in the struc
 
     @staticmethod
     def list_meta_variables(labels: list) -> str:
+        """
+Quotes and ';'-joins a list of labels
+        :param labels:
+        :return:
+        """
         listing = '; '.join(text_tools.enquote_list(labels))
         return listing
 

@@ -1,6 +1,6 @@
 import dmnconverter.tools.texttools as text_tools
 from dmnconverter.tools.decisiontable import DecisionTable
-from dmnconverter.verify.verfication import Verification
+from dmnconverter.verify.verification import Verification
 
 
 class Coverage(Verification):
@@ -14,7 +14,7 @@ class Coverage(Verification):
 
         # Variables
         structure.append(
-            'Variable = {' + super().list_meta_variables(text_tools.enquote_list(decision_table.input_labels)) + '}')
+            'Variable = {' + super().list_meta_variables(decision_table.input_labels) + '}')
 
         # Domain and ranges
         (input_domain, input_range) = super().specify_meta_domain(decision_table.input_label_dict, 0, 20)
@@ -25,7 +25,7 @@ class Coverage(Verification):
 
         #  Rule components
         structure.append('RuleIn = {' + '; '.join(
-            super().build_meta_input_rule(decision_table.input_labels, decision_table.input_rule_comp)) + '}')
+            super().build_meta_input_rule(decision_table)) + '}')
         return structure
 
     def build_vocabulary(self, decision_table: DecisionTable) -> [str]:
@@ -79,10 +79,12 @@ class Coverage(Verification):
                   "",
                   "// RESTRICT DOMAINS & RANGES",
                   "// for all good values within the range, link these to the domain",
-                  "!var[Variable], minVal[Value], maxVal[Value]: Range(var, minVal, maxVal) => (minVal =< VarValue(var) =< maxVal).",
+                  "!var[Variable], minVal[Value], maxVal[Value]: Range(var, minVal, maxVal) => (minVal =< VarValue("
+                  "var) =< maxVal).",
                   "",
                   "// If a domain is defined, all variable assignments match it.x",
-                  "!var[Variable], val1[Value]: ?val2[Value]: Domain(var,val1)=> (Domain(var,val2) & VarValue(var)=val2).",
+                  "!var[Variable], val1[Value]: ?val2[Value]: Domain(var,val1)=> (Domain(var,val2) & VarValue("
+                  "var)=val2).",
                   "",
                   "// DEFINE COMPARISON OPERATORS",
                   "{  ",
