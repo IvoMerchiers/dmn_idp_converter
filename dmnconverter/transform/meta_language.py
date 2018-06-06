@@ -30,7 +30,7 @@ Builds meta representation structure based on the dictionary representation of t
         return structure
 
     @abstractmethod
-    def build_structure_dict(self, dmn_table: [DecisionTable]) -> dict:
+    def build_structure_dict(self, dmn_table: DecisionTable) -> dict:
         """
 Stores all elements of the structure as key='predicate', value='values of string'
         :param dmn_table:

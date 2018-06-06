@@ -22,17 +22,19 @@ Networks of DMN tables are also supported, as long as there are no name-space co
 ## Supported output
 The package converts the DMN table into IDP3 code. Multiple transformations are possible, with distinct goals.
 
-* **Direct translation:** Focusses on speed and human-readability. Only supports 'Unique' hit policy
+* **Direct translation:** Focuses on speed and human-readability. Only supports 'Unique' hit policy
   * Inductive formalism: Most performant version, using FO(.) definitions
   * Implicative formalism: More natural, using implications
   
 * **Meta model:** Slower and harder to read, but higher expressiveness allows additional inferences
   * Core meta model: Model that encodes the full DMN tables for multiple hit polices 
-  * Table verification: Can find inconsistencies in single table.
+  * Table verification: Can find inconsistencies in a single table.
   * Rule Learning: Can combine given rules and data to find a consistent DMN table.
  
 Information on how to run IDP code can be found on [the official site](https://dtai.cs.kuleuven.be/software/idp).
 
+## Contribution
+Users are encouraged to help with supporting other data types, bugfixing and adding new features.
   
 ## Author
 * **Ivo Merchiers** - *Development* - [IvoMerchiers](https://github.com/IvoMerchiers) 
@@ -41,6 +43,6 @@ Information on how to run IDP code can be found on [the official site](https://d
 This project is licensed under the MIT Licens - see the [License.md](LICENSE.md) file for details
 
 ## Acknowledgements
-* Developed for a KUL thesis
+* Developed for KUL as a thesis
 * Assisted by Simon Marynissen
 * Table verification approach inspired by [Calvanese et al.](https://arxiv.org/abs/1603.07466v1)

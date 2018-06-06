@@ -22,6 +22,17 @@ class GeneralConverter(ABC):
         (vocabulary, theory, structure) = self.convert(dmn_tables)
         printer.print_idp(file_name, vocabulary, theory, structure)
 
+    def print_base_file(self, file_name) -> None:
+        """
+Prints file without reference to a specific decision table, so voc and theory without a structure.
+        :param file_name:
+        """
+        empty_table = DecisionTable()
+        vocabulary = self.build_vocabulary(empty_table)
+        theory = self.build_theory(empty_table)
+        structure = self.build_structure(empty_table)
+        printer.print_idp(file_name, vocabulary, theory, structure)
+
     @abstractmethod
     def convert(self, decision_tables: [DecisionTable]) -> ([str], [str], [str]):
         """
@@ -45,7 +56,6 @@ Convert a given decision table into the required format
 
 
 class DirectConverter(GeneralConverter):
-
     def convert(self, decision_tables: [DecisionTable]) -> ([str], [str], [str]):
 
         vocabularies = [self.build_vocabulary(table) for table in decision_tables]
