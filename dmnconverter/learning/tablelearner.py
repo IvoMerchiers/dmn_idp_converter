@@ -1,9 +1,8 @@
 """"
-Uses meta model with multiple assignments to learn a single table. Can be used by itself, or combined with a (partial) table
+Uses meta model with multiple assignments to learn a single table. Currently does not take into account a specific table
 """
 import warnings
 
-from boltons.setutils import IndexedSet
 
 from dmnconverter.tools.decisiontable import DecisionTable
 from dmnconverter.verify.verification import Verification
@@ -22,16 +21,7 @@ class TableLearner(Verification):
         return vocabulary, theory, structure
 
     def build_structure(self, decision_table: DecisionTable):
-        structure_dict = super().build_structure_dict(decision_table)
-        predicate_names = structure_dict.keys()
-        structure: [str] = []
-        for predicate in predicate_names:
-            value_list = structure_dict[predicate]
-            # remove doubles
-            unique_value_list = list(IndexedSet(value_list))
-            values_string = '; '.join(unique_value_list)
-            structure.append(predicate + "<ct> = {" + values_string + "}")
-        return structure
+        return []
 
     def build_vocabulary(self, decision_table: DecisionTable) -> [str]:
         vocabulary = ["type RuleNr isa int",

@@ -10,4 +10,4 @@ output_name = file_name + '.idp'
 # --- Convert ---
 converter = DMNConverter()
 converter.read(file_location)
-converter.print_inductive(output_name)
+converter.learn_table(output_name)

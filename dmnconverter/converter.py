@@ -11,6 +11,7 @@ import dmnconverter.transform.meta
 import dmnconverter.verify.coverage
 import dmnconverter.verify.unique_policy
 import dmnconverter.verify.verification
+import dmnconverter.learning.tablelearner
 
 
 class DMNConverter:
@@ -73,4 +74,7 @@ Create file to check that DMN table fully covers input space without overlap (fo
         :param file_name:
         """
         dmnconverter.verify.unique_policy.VerifyUniquePolicy().print_file(file_name, self.dmn_tables)
+
+    def learn_table(self, file_name):
+        dmnconverter.learning.tablelearner.TableLearner().print_file(file_name, self.dmn_tables)
 
