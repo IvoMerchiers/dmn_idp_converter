@@ -40,7 +40,7 @@ Users are encouraged to help with supporting other data types, bugfixing and add
 * **Ivo Merchiers** - *Development* - [IvoMerchiers](https://github.com/IvoMerchiers) 
 
 ## License
-This project is licensed under the MIT Licens - see the [License.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [License](LICENSE) file for details
 
 ## Acknowledgements
 * Developed for KUL as a thesis
